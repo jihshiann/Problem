@@ -1,2 +1,2 @@
 # Problems
-Try to solve some exercises
+Try to solve some exercises.
