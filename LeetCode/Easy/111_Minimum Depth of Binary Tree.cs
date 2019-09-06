@@ -36,45 +36,11 @@ namespace _111_Minimum_Depth_of_Binary_Tree
         {
             public int MinDepth(TreeNode root)
             {
-                if (root == null)
-                    return 0;
-                else if (root.left == null && root.right == null)
-                    return 1;
+                if (root == null) return 0;
+                else if (root.left == null) return 1 + MinDepth(root.right);
+                else if (root.right == null) return 1 + MinDepth(root.left);
 
-                List<int> depth = new List<int>();
-                Count(root, depth);
-                
-                return depth.Min();
-            }
-            List<int> Count(TreeNode node, List<int> depth)
-            {
-                if (node.left == null && node.right == null)
-                {
-                    depth.Add(1);
-                    return depth;
-                }
-
-                dfs(node, 0, ref depth);
-
-                return depth;
-            }
-            void dfs(TreeNode node, int level, ref List<int> depth)
-            {
-                level++;
-                if (node.left == null && node.right == null)
-                {
-                    depth.Add(level);
-                    level--;
-                    return;
-                }
-                else if (node.left != null)
-                {
-                    dfs(node.left, level, ref depth);
-                }
-                if (node.right != null)
-                {
-                    dfs(node.right, level, ref depth);
-                }
+                return 1 + Math.Min(MinDepth(root.left), MinDepth(root.right));
             }
         }
     }
