@@ -51,7 +51,7 @@ namespace _110_Balanced_Binary_Tree
             {
                 //最底層為0
                 if (node == null)
-                    return 0;
+                   
 
                 int leftLevel = Dfs(node.left, ref isBalanced), rightLevel = Dfs(node.right, ref  isBalanced);
 
