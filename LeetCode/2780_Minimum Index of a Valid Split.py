@@ -1,4 +1,3 @@
-from collections import Counter
 class Solution(object):
     def minimumIndex(self, nums):
         """
@@ -10,10 +9,22 @@ class Solution(object):
         if arr_len == 1:
             return -1
 
-        counter = Counter(nums)
-        most_comm = counter.most_common(1)
-        comm_val = most_comm[0][0]
-        count_most = most_comm[0][1]
+        # counter = Counter(nums)
+        # most_comm = counter.most_common(1)
+        # comm_val = most_comm[0][0]
+        # count_most = most_comm[0][1]
+
+        # Boyer¡VMoore majority vote algorithm
+        count = 0
+        candidate = None
+        for num in nums:
+            if count == 0:
+                candidate = num
+
+            count += 1 if candidate == num else -1
+
+        comm_val = candidate
+        count_most = nums.count(candidate)
 
         if count_most == arr_len:
             return 0
