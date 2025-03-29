@@ -1,52 +1,88 @@
-import heapq
+MOD = 10**9 + 7
 
 class Solution(object):
-    def maxPoints(self, grid, queries):
+    def maximumScore(self, nums, k):
         """
-        :type grid: List[List[int]]
-        :type queries: List[int]
-        :rtype: List[int]
+        :type nums: List[int]
+        :type k: int
+        :rtype: int
         """
-        # min-heap(val, row, column)
-        heap=[]
-        heapq.heappush(heap, (grid[0][0], 0, 0))
-
-        count = 0
-        # 四個鄰居方向：下、上、右、左
-        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-        row, col = len(grid), len(grid[0])
-        ans = [0] * len(queries)
-
-        #已尋訪
-        visited = [[False for n in range(col)] for m in range(row)]
-        visited[0][0] = True
-
-        # 排序query，並保留原始順序
-        sorted_q = sorted((q, i)for i, q in enumerate(queries))
-
-        for q, i in sorted_q:
-            while heap and heap[0][0]<q:
-                count +=1
-                #取得目前座標並結束尋訪
-                val , r, c = heapq.heappop(heap)
-                #擴展
-                for dr, dc in directions:
-                    nr, nc = r + dr, c + dc
-                    if 0<=nr<row and 0<=nc<col and visited[nr][nc] == False:
-                        visited[nr][nc] = True
-                        heapq.heappush(heap, (grid[nr][nc], nr, nc))
-
-            ans[i] = count
-        return ans
-
+        n = len(nums)
         
+        # 1. 預處理：計算質因數分數
+        # 先計算 1 ~ max_val 的最小質因數，用篩法
+        max_val = max(nums)
+        spf = list(range(max_val+1))  # spf[x] = smallest prime factor of x
 
-
+        for i in range(2, int(max_val**0.5)+1):
+            if spf[i] == i:  # i 是質數
+                for j in range(i*i, max_val+1, i):
+                    if spf[j] == j:
+                        spf[j] = i
+        
+        # 函數：計算 x 的質因數分數
+        def primeScore(x):
+            score = 0
+            prev = -1
+            while x > 1:
+                #取得 x 的最小質因數
+                p = spf[x]
+                if p != prev:
+                    score += 1
+                    prev = p
+                # 整數除法分解質因數
+                x //= p
+            return score
+        
+        # 計算每個數字的質因數分數
+        pscore = [primeScore(x) for x in nums]
+        
+        # 2. 使用單調棧計算每個索引的有效子陣列數量 count[i]
+        # L[i] = 最近左邊索引 j, j < i, 使得 pscore[j] >= pscore[i]，如果無則 -1
+        L = [-1] * n
+        stack = []
+        for i in range(n):
+            # 當前數字的質因數分數
+            while stack and pscore[stack[-1]] < pscore[i]:
+                stack.pop()
+            L[i] = stack[-1] if stack else -1
+            stack.append(i)
+        
+        # R[i] = 最近右邊索引 j, j > i, 使得 pscore[j] > pscore[i]，如果無則 n
+        R = [n] * n
+        stack = []
+        for i in range(n-1, -1, -1):
+            while stack and pscore[stack[-1]] <= pscore[i]:
+                stack.pop()
+            R[i] = stack[-1] if stack else n
+            stack.append(i)
+        
+        # count[i] 為 (i - L[i]) * (R[i] - i)
+        count = [ (i - L[i]) * (R[i] - i) for i in range(n) ]
+        
+        # 3. 將每個索引 i 形成 (nums[i], count[i]) 配對
+        # 我們希望根據 nums[i] 從大到小排序，因為較大的乘數更有利
+        pairs = [(nums[i], count[i]) for i in range(n)]
+        pairs.sort(key=lambda x: x[0], reverse=True)
+        
+        # 4. 貪心選取操作次數，不超過 k
+        remaining = k
+        score = 1
+        for x, cnt in pairs:
+            if remaining <= 0:
+                break
+            use = min(cnt, remaining)
+            # score *= x^use  (模 MOD)
+            # 使用快速冪
+            score = (score * pow(x, use, MOD)) % MOD
+            remaining -= use
+        
+        return score
 
 
 if __name__ == '__main__':
     s = Solution()
-    print(s.maxPoints([[1,2,3],[2,5,7],[3,5,1]], [5,6,2]))  # [5,8,1]
-    print(s.maxPoints([[5,2,1],[1,1,2]], [3]))  # [0]
+    print(s.maximumScore([8,3,9,3,8], 2)) # 81
+    print(s.maximumScore([19,12,14,6,10,18], 3)) # 4788
 
     
