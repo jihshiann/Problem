@@ -12,20 +12,27 @@ class Solution:
     def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
         result = []
         stack = []
+        prev = None  # 用來記錄上一次處理完的節點
         curr = root
-        prev = None
-
+        
+        # 只要 curr 不為 None 或堆疊中有元素，就持續進行
         while curr or stack:
-            if curr:
+            # 先將所有左子節點推入堆疊
+            while curr:
                 stack.append(curr)
                 curr = curr.left
+            # 查看堆疊頂端節點，但不彈出
+            curr = stack[-1]
+            # 如果該節點沒有右子樹，或右子樹已被處理過
+            if not curr.right or curr.right == prev:
+                result.append(curr.val)  # 記錄該節點
+                prev = curr              # 更新已處理節點
+                stack.pop()              # 彈出該節點
+                curr = None              # 將 curr 設為 None，以便從堆疊中彈出下一個節點
             else:
-                curr = stack.pop()
-                result.append(curr.val)
-                prev = curr
-                if curr.right != prev:
-                    curr = curr.right
-
+                # 如果右子樹還沒處理，則轉向右子樹
+                curr = curr.right
+        
         return result
 
 
