@@ -10,16 +10,11 @@ class Solution(object):
         # °¸©_°¸©_°¸©_...
 
         even = (n+1) // 2
-        odd = n // 2
+        odd = n - even
         # ans = (5**even) * (4**odd) % MOD
 
         # pow(base, exp, mod)  ¡Ý  (base**exp) % mod
         # (a modm)¡Ñ(b modm) mod m= (a¡Ñb) mod m,
-        ans = pow(5, even, MOD) * pow(4, odd, MOD) % MOD
-
-
-
-        
-        return ans
+        return pow(5, even, MOD) * pow(4, odd, MOD) % MOD
 
         
