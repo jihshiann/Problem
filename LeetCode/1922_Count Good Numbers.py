@@ -1,20 +1,17 @@
 class Solution(object):
-    def countGoodNumbers(self, n):
+    def countGoodTriplets(self, arr, a, b, c):
         """
-        :type n: int
+        :type arr: List[int]
+        :type a: int
+        :type b: int
+        :type c: int
         :rtype: int
         """
-        MOD = 10**9 + 7
-        
-        # 0 1 2 3 4 5
-        # °¸©_°¸©_°¸©_...
-
-        even = (n+1) // 2
-        odd = n - even
-        # ans = (5**even) * (4**odd) % MOD
-
-        # pow(base, exp, mod)  ¡Ý  (base**exp) % mod
-        # (a modm)¡Ñ(b modm) mod m= (a¡Ñb) mod m,
-        return pow(5, even, MOD) * pow(4, odd, MOD) % MOD
-
-        
+        ans = 0
+        for i,num_i in enumerate(arr):
+            for j, num_j in enumerate(arr[i+1:], start = i+1):
+                if abs(num_i - num_j) <= a:
+                    for k, num_k in enumerate(arr[j+1:], start = j+1):
+                        if abs(num_j- num_k) <= b and abs(num_i-num_k) <= c:
+                            ans+=1
+        return ans
